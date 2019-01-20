@@ -7,7 +7,9 @@
     <form action="" method="post">
     {% csrf_token %}
     <input type="text" name="user_name" id="mobile" placeholder="请输入用户名/手机号" class="login-name">
+        {{ data.user_name.0 }}
 	    <input type="password" name="pass_word" id="password" placeholder="请输入密码" class="login-password">
+        {{ data.pass_word.0 }}
 	    <input type="submit" class="login-btn" value="我要登录">
 	    <div class="agree">
 	    	<a href="{% url 'user:register' %}">免费注册</a>

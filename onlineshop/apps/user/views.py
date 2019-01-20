@@ -19,9 +19,17 @@ class LoginClassView(View):
         data = request.POST
         form = LoginModelForm(data)
         if form.is_valid():
-            return HttpResponse('登陆成功')
+            user = form.cleaned_data.get('user')
+            request.session['ID'] = user.pk
+            request.session['phone'] = user.phone
+            # request.session['head'] = user.head
+            request.session.set_expiry(0)  # 关闭浏览器就消失
+            return redirect('user:member')
         else:
-            return HttpResponse('登陆失败')
+            context ={
+                'data': form.errors
+            }
+            return render(request, 'user/login.html', context=context)
 
 
 
@@ -49,4 +57,13 @@ class RegisterClassView(View):
                 'errors': form.errors
             }
             return render(request, 'user/templates/user/reg.html', context=context)
+
+
+
+class MemberClassView(View):
+    def get(self, request):
+        if request.session.get("ID") is None:
+            return redirect('user:login')
+        else:
+            return render(request, 'user/member.html')
 

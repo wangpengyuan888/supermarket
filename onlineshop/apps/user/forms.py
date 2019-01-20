@@ -80,6 +80,8 @@ class LoginModelForm(forms.ModelForm):
         #     # 用户名不存在
         #      raise forms.ValidationError({'pass_word': '用户名或密码错误'})
 
+
+
         # 验证用户名
         user_name = self.cleaned_data.get('user_name')
         # 查询数据库
