@@ -16,14 +16,12 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
-from onlineshop import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^onlineshop/main', views.MainClassView.as_view(), name='main'),
-    url(r'^goods/', include('goods.urls', namespace='goods')),
-    url(r'^orderform/', include('orderform.urls', namespace='orderform')),
-    url(r'^shopingcar/', include('shopingcar.urls', namespace='shopingcar')),
-    url(r'^user/', include('user.urls', namespace='user')),
-    url(r'^pay/', include('pay.urls', namespace='pay')),
+    # 添加子路由
+    url(r'^goods/', include('apps.goods.urls', namespace='goods')),
+    url(r'^orderform/', include('apps.orderform.urls', namespace='orderform')),
+    url(r'^shopingcar/', include('apps.shopingcar.urls', namespace='shopingcar')),
+    url(r'^user/', include('apps.user.urls', namespace='user')),
 ]
