@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 	<head>
@@ -9,10 +10,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <meta name="renderer" content="webkit">
         <meta http-equiv="Cache-Control" content="no-siteapp" />
-        <link rel="icon" type="image/png" href="/theme/default/images/favicon.png">
-		<link href="css/amazeui.min.css" rel="stylesheet" type="text/css" />
-		<link href="css/style.css" rel="stylesheet" type="text/css" />
-		<link href="css/check.css" rel="stylesheet" type="text/css" />
+{#        <link rel="icon" type="image/png" href="/theme/default/images/favicon.png">#}
+		<link href="{% static 'css/amazeui.min.css' %}" rel="stylesheet" type="text/css" />
+		<link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css" />
+		<link href="{% static 'css/check.css' %}" rel="stylesheet" type="text/css" />
 	</head>
 	<body>
 		<header data-am-widget="header" class="am-header am-header-default sq-head ">
@@ -26,60 +27,73 @@
             </h1>
 	    </header>
 	    <div style="height: 49px;"></div>
+        <form action="" method="post">
+            {% csrf_token %}
 	    <ul class="safty1">
 	    	<li>
 	    		<a href="">
 	    			<i style="margin-top: 25px;">头像</i>
 	    			<div class="infor-pic">
-	    				<img src="images/infortx.png" />
+	    				<img src="{% static 'images/infortx.png' %}" />
 	    			</div>
 	    		</a>
 	    	</li>
 	    	<li>
-	    		<a href="">
 	    			<i>昵称</i>
-	    			<input class="infor-tele" placeholder="默契"/>	    			
-	    		</a>
+	    			<input class="infor-tele" placeholder="用户名" name="pet_name" value="{% if data %}{{ data.pet_name }}{% endif %}"/>
 	    	</li>
+              <p>{{ errors.pet_name.0 }}</p>
 	    	<li>
-	    		<a href="">
 	    			<i>性别</i>
 	    			<i class="infor-tele">
-	    				<label class="am-radio-inline">
-				          <input type="radio" name="radio10" checked="checked" value="1" data-am-ucheck>男
+                        {% if data.gender == 1 %}
+                            <label class="am-radio-inline">
+				          <input type="radio" name="gender" checked="checked" value="1" data-am-ucheck>男
 				        </label>
 				        <label class="am-radio-inline">
-				          <input type="radio" name="radio10" value="1" data-am-ucheck>女
+				          <input type="radio" name="radio10" value="2" data-am-ucheck>女
 				        </label>
+                            {% elif data.gender == 2 %}
+                            <label class="am-radio-inline">
+				          <input type="radio" name="gender"  value="1" data-am-ucheck>男
+				        </label>
+				        <label class="am-radio-inline">
+				          <input type="radio" name="radio10" value="2" data-am-ucheck checked="checked">女
+				        </label>
+                        {% endif %}
+
 	    			</i>
-	    		</a>
 	    	</li><li>
-	    		<a href="">
 	    			<i>生日</i>
-                    <input class="infor-tele" placeholder="出生日期"/>
-	    		</a>
+                    <input class="infor-tele" placeholder="出生日期" name="birthday" value="{% if data.birthday %}{{ data.birthday }}{% endif %}"/>
 	    	</li>
 	    </ul>
 	    <div style="height: 10px; background: #efefef;"></div>
 	     <ul class="safty1">
 	    	<li>
 	    			<i>学校</i>
-	    			<input class="infor-tele" placeholder="就读于哪个学校"/>	    			
+	    			<input class="infor-tele" placeholder="您还为完善学校信息" name="school" value="{% if data.school %}{{ data.school }}{% endif %}"/>
 	    	</li>
+             <p>{{ errors.school.0 }}</p>
 	    	<li>
 	    			<i>位置</i>
-	    			<input class="infor-tele" placeholder="详细地址"/>	    			
+	    			<input class="infor-tele" placeholder="您还未完善详细地址" name="site" value="{% if data.site %}{{ data.site }}{% endif %}"/>
 	    	</li>
+             <p>{{ errors.site.0 }}</p>
 	    	<li>
 	    			<i>故乡</i>
-                    <input class="infor-tele" placeholder="来自哪里"/>
+                    <input class="infor-tele" placeholder="您还为完善故乡信息" name="native_place" value="{% if data.native_place %}{{ data.native_place }}{% endif %}"/>
 	    	</li>
+             <p>{{ errors.native_place.0 }}</p>
 	    	<li>
 	    			<i>手机</i>
-                    <input class="infor-tele" placeholder="13012345678"/>
+                    <input class="infor-tele" placeholder="您还未完善手机信息" name="phone" value="{% if data.phone %}{{ data.phone }}{% endif %}"/>
 	    	</li>
+             <p>{{ errors.phone.0 }}</p>
 	    </ul>
-	    <script src="js/jquery.min.js"></script>
-        <script src="js/amazeui.min.js"></script>
+            <center><button type="submit" class="am-btn am-btn-danger am-round">保存</button></center>
+            </form>
+	    <script src="{% static 'js/jquery.min.js' %}"></script>
+        <script src="{% static 'js/amazeui.min.js' %}"></script>
 	</body>
 </html>

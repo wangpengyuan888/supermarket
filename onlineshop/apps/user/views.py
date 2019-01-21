@@ -1,10 +1,8 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-
-# Create your views here.
+from db.Base_View import VerifyLoginView
 from django.views import View
-
-from user.forms import RegisterModelForm, LoginModelForm
+from user.forms import RegisterModelForm, LoginModelForm, AlterInfoModelForm
 from user.helper import set_pwd
 from user.models import UserTable
 
@@ -14,18 +12,22 @@ class LoginClassView(View):
         return render(request, 'user/templates/user/login.html')
 
 
-
+    # 对表单提交的数据进行保存
     def post(self, request):
         data = request.POST
+        # 数据进行合法性验证
         form = LoginModelForm(data)
         if form.is_valid():
+            # 如果数据合法
             user = form.cleaned_data.get('user')
+            # 设置session
             request.session['ID'] = user.pk
-            request.session['phone'] = user.phone
+            request.session['user_name'] = user.user_name
             # request.session['head'] = user.head
-            request.session.set_expiry(0)  # 关闭浏览器就消失
+            request.session.set_expiry(9999)  # 关闭浏览器就消失
             return redirect('user:member')
         else:
+            # 数据不合法 回显网页
             context ={
                 'data': form.errors
             }
@@ -59,11 +61,39 @@ class RegisterClassView(View):
             return render(request, 'user/templates/user/reg.html', context=context)
 
 
-
-class MemberClassView(View):
+# 个人中心
+class MemberClassView(VerifyLoginView):
     def get(self, request):
-        if request.session.get("ID") is None:
-            return redirect('user:login')
-        else:
-            return render(request, 'user/member.html')
+        return render(request, 'user/member.html')
 
+
+# 修改个人信息
+class PersonInfoClassView(VerifyLoginView):
+    def get(self, request):
+        data = UserTable.objects.get(pk=request.session.get('ID'))
+        return render(request, 'user/infor.html', {'data': data})
+
+    def post(self, request):
+        data = request.POST
+        item = UserTable.objects.get(pk=request.session.get('ID'))
+        form = AlterInfoModelForm(data, instance=item)
+        if form.is_valid():
+            # 数据合法
+            # 存储数据库
+            form.save()
+            return redirect('user:info')
+        else:
+            context = {
+                'errors': form.errors,
+                'data': data
+            }
+            return render(request, 'user/infor.html', context=context)
+
+
+# 忘记密码
+class ForgetPwdClassView(View):
+    def get(self, request):
+        return render(request, 'user/forgetpassword.html')
+
+    def post(self, request):
+        pass

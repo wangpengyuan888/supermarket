@@ -3,7 +3,7 @@ from django import forms
 from user.helper import set_pwd
 from user.models import UserTable
 
-
+# 注册表单数据验证
 class RegisterModelForm(forms.ModelForm):
     pass_word = forms.CharField(min_length=6, max_length=16, error_messages={
         'required': '密码必须填写',
@@ -47,7 +47,7 @@ class RegisterModelForm(forms.ModelForm):
         else:
             return self.cleaned_data
 
-
+# 登陆表单验证
 class LoginModelForm(forms.ModelForm):
     pass_word = forms.CharField(min_length=6, max_length=16, error_messages={
         'required': '密码必须填写',
@@ -98,3 +98,29 @@ class LoginModelForm(forms.ModelForm):
         # 返回所有清洗后的数据
         self.cleaned_data['user'] = user
         return self.cleaned_data
+
+
+# 修改个人资料表单验证
+class AlterInfoModelForm(forms.ModelForm):
+    class Meta:
+        model = UserTable
+        fields = ['pet_name', 'school', 'site', 'native_place', 'phone']
+        error_messages = {
+            'pet_name': {
+                'required': '昵称必须填写',
+                'max_length': '昵称最大长度为10',
+                'min_length': '昵称最小长度为3'
+            },
+            'school': {
+                'max_length': '最大长度为50'
+            },
+            'site': {
+                'max_length': '最大长度为200'
+            },
+            'native_place': {
+                'max_length': '最大长度为200'
+            },
+            'phone': {
+                'max_length': '最大长度为11'
+            }
+        }
