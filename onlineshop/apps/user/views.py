@@ -1,9 +1,15 @@
-from django.http import HttpResponse
+import random
+import re
+import uuid
+
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
+from django_redis import get_redis_connection
+
 from db.Base_View import VerifyLoginView
 from django.views import View
-from user.forms import RegisterModelForm, LoginModelForm, AlterInfoModelForm
-from user.helper import set_pwd
+from user.forms import RegisterModelForm, LoginModelForm, AlterInfoModelForm, AlterPassWordModelForm, PassWordForm
+from user.helper import set_pwd, send_sms
 from user.models import UserTable
 
 # 登陆页面
@@ -96,4 +102,89 @@ class ForgetPwdClassView(View):
         return render(request, 'user/forgetpassword.html')
 
     def post(self, request):
+        data = request.POST
+        form = AlterPassWordModelForm(data)
+        if form.is_valid():
+            user_name = form.cleaned_data.get('user_name')
+            pass_word = set_pwd(form.cleaned_data.get('pass_word'))
+            UserTable.objects.filter(user_name=user_name).update(pass_word=pass_word)
+            return redirect('user:login')
+        else:
+            context = {
+                'errors': form.errors,
+                'data': data
+            }
+            return render(request, 'user/forgetpassword.html', context=context )
+
+
+# 安全设置
+class SecuritySettings(VerifyLoginView):
+    def get(self, request):
+        return render(request, 'user/saftystep.html')
+
+
+# 修改密码
+class PassWordClassView(VerifyLoginView):
+    def get(self, request):
+        return render(request, 'user/password.html')
+
+    def post(self, request):
+        data = request.POST
+        form = PassWordForm(data)
+        if form.is_valid():
+            pass_word = PassWordForm.checkPassword(request)
+            UserTable.objects.filter(pk=request.session.get('ID')).Update(pass_word=pass_word)
+            return  redirect('user:securitysettings')
+        else:
+            context ={
+                'data': data,
+                'errors': form.errors
+            }
+            return render(request, 'user/password.html', context=context)
+
+
+# 发送验证码信息
+class SendMsg(View):
+    def get(self, request):
         pass
+
+    def post(self, request):
+        user_name = request.POST.get('user_name', '')
+        # 验证数据的合法性
+        rs = re.search('^1[3-9]\d{9}$', user_name)
+        if rs is None:
+            return JsonResponse({'error': 1, 'errmsg': '电话号码格式错误!'})
+
+        # 生成随机验证码
+        random_code = "".join([str(random.randint(0, 9)) for _ in range(6)])
+        print("=============随机验证码为==={}==============".format(random_code))
+
+        # >>>2. 保存验证码到redis中
+        # 获取连接
+        r = get_redis_connection()
+        # 保存手机号码对应的验证码
+        r.set(user_name, random_code)
+        r.expire(user_name, 60)  # 设置60秒后过期
+
+        # 首先获取当前手机号码的发送次数
+        key_times = "{}_times".format(user_name)
+        now_times = r.get(key_times)  # 从redis获取的二进制,需要转换
+        # print(int(now_times))
+        if now_times is None or int(now_times) < 5:
+            # 保存手机发送验证码的次数, 不能超过5次
+            r.incr(key_times)
+            # 设置一个过期时间
+            r.expire(key_times, 3600)  # 一个小时后再发送
+        else:
+            # 返回,告知用户发送次数过多
+            return JsonResponse({"error": 1, "errmsg": "发送次数过多"})
+
+        # >>>3. 接入运营商
+        __business_id = uuid.uuid1()
+        params = "{\"code\":\"%s\",\"product\":\"狗哥--你是真的nice\"}" % random_code
+        # print(params)
+        rs = send_sms(__business_id, user_name, "注册验证", "SMS_2245271", params)
+        print(rs.decode('utf-8'))
+
+        # 3. 合成响应
+        return JsonResponse({'error': 0})
