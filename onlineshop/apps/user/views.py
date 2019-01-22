@@ -132,11 +132,13 @@ class PassWordClassView(VerifyLoginView):
         data = request.POST
         form = PassWordForm(data)
         if form.is_valid():
-            pass_word = PassWordForm.checkPassword(request)
-            UserTable.objects.filter(pk=request.session.get('ID')).Update(pass_word=pass_word)
-            return  redirect('user:securitysettings')
+            if form.checkPassword(request):
+                UserTable.objects.filter(pk=request.session.get('ID')).update(pass_word=pass_word)
+                return redirect('user:securitysettings')
+            else:
+                return render(request, 'user/password.html', {'errors': form.errors})
         else:
-            context ={
+            context = {
                 'data': data,
                 'errors': form.errors
             }

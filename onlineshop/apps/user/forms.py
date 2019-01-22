@@ -228,9 +228,10 @@ class PassWordForm(forms.Form):
         user_id = request.session.get('ID')
         user_info = UserTable.objects.get(pk=user_id)
         if user_info.pass_word == pass_word:
-            return pass_word
+            return True
         else:
-            raise forms.ValidationError({'pass_word': '旧密码不正确'})
+            self.add_error('pass_word', '旧密码错误')
+            return False
 
 
 
