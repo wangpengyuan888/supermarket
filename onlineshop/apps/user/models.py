@@ -30,6 +30,7 @@ class UserTable(BaseModel):
         RegexValidator(r'1[35678]\d{9}', '请输入正确的手机号')
     ])
 
+    logo = models.ImageField(upload_to='head/%Y%m/%d', default='head/memtx.png', verbose_name='店铺LOGO')
     class Meta:
         db_table = 'userTable'
         verbose_name = '用户表'
@@ -42,8 +43,7 @@ class UserTable(BaseModel):
 # 用户头像模型
 class UserIcon(models.Model):
     UserId = models.ForeignKey(to='UserTable', verbose_name='用户id')
-    IconId = models.IntegerField(verbose_name='图片id')
-    IconUrl = models.CharField(max_length=200, verbose_name='头像位置', blank=True, null=True)
+    logo = models.ImageField(upload_to='head/%Y%m/%d', default='head/memtx.png', verbose_name='店铺LOGO')
     create_time = models.DateTimeField(verbose_name="创建时间",
                                        auto_now_add=True,
                                        )
@@ -57,7 +57,7 @@ class UserIcon(models.Model):
         verbose_name_plural = '用户头像'
 
     def __str__(self):
-        return self.IconId
+        return '用户头像'
 
 
 

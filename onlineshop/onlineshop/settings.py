@@ -61,7 +61,7 @@ ROOT_URLCONF = 'onlineshop.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates'), os.path.join(BASE_DIR, 'apps')]
+        'DIRS': [os.path.join(BASE_DIR, 'templates')]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -70,6 +70,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
             ],
         },
     },
@@ -149,3 +150,8 @@ SESSION_CACHE_ALIAS = "default"
 # ACCESS_KEY_ID/ACCESS_KEY_SECRET 根据实际申请的账号信息进行替换
 ACCESS_KEY_ID = "LTAI2qSiJdWP87em"
 ACCESS_KEY_SECRET = "FzORQ587PgGBoOAdmxzCjaxQi8klUi"
+
+
+# 上传文件配置
+MEDIA_URL = "/static/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')

@@ -27,17 +27,18 @@
             </h1>
 	    </header>
 	    <div style="height: 49px;"></div>
-        <form action="" method="post">
+        <form action="" method="post" enctype="multipart/form-data">
             {% csrf_token %}
 	    <ul class="safty1">
 	    	<li>
 	    		<a href="">
 	    			<i style="margin-top: 25px;">头像</i>
 	    			<div class="infor-pic">
-	    				<img src="{% static 'images/infortx.png' %}" />
+	    				<img src="{{ MEDIA_URL }}{{ user.head }}" />
 	    			</div>
 	    		</a>
 	    	</li>
+         <li><input type="file" name="head"></li>
 	    	<li>
 	    			<i>昵称</i>
 	    			<input class="infor-tele" placeholder="给自己起个好听的名字吧" name="pet_name" value="{% if data.pet_name %}{{ data.pet_name }}{% endif %}"/>

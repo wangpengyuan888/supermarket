@@ -15,7 +15,7 @@ from user.models import UserTable
 # 登陆页面
 class LoginClassView(View):
     def get(self, request):
-        return render(request, 'user/templates/user/login.html')
+        return render(request, 'user/login.html')
 
 
     # 对表单提交的数据进行保存
@@ -45,7 +45,7 @@ class LoginClassView(View):
 class RegisterClassView(View):
     # 请求为get的时候进入注册表单页面
     def get(self, request):
-        return render(request, 'user/templates/user/reg.html')
+        return render(request, 'user/reg.html')
 
     # 请求为post将表单提交的数据保存
     def post(self, request):
@@ -64,7 +64,7 @@ class RegisterClassView(View):
                 'data': data,
                 'errors': form.errors
             }
-            return render(request, 'user/templates/user/reg.html', context=context)
+            return render(request, 'user/reg.html', context=context)
 
 
 # 个人中心
@@ -81,12 +81,14 @@ class PersonInfoClassView(VerifyLoginView):
 
     def post(self, request):
         data = request.POST
+        head = request.FILES.get('head')
         item = UserTable.objects.get(pk=request.session.get('ID'))
         form = AlterInfoModelForm(data, instance=item)
         if form.is_valid():
             # 数据合法
             # 存储数据库
             form.save()
+
             return redirect('user:info')
         else:
             context = {
@@ -133,7 +135,7 @@ class PassWordClassView(VerifyLoginView):
         form = PassWordForm(data)
         if form.is_valid():
             if form.checkPassword(request):
-                UserTable.objects.filter(pk=request.session.get('ID')).update(pass_word=pass_word)
+                UserTable.objects.filter(pk=request.session.get('ID')).update(pass_word=set_pwd(form.cleaned_data.get('new_pass_word')))
                 return redirect('user:securitysettings')
             else:
                 return render(request, 'user/password.html', {'errors': form.errors})
@@ -183,7 +185,7 @@ class SendMsg(View):
 
         # >>>3. 接入运营商
         __business_id = uuid.uuid1()
-        params = "{\"code\":\"%s\",\"product\":\"狗哥--你是真的nice\"}" % random_code
+        params = "{\"code\":\"%s\",\"product\":\"测试测试\"}" % random_code
         # print(params)
         rs = send_sms(__business_id, user_name, "注册验证", "SMS_2245271", params)
         print(rs.decode('utf-8'))
