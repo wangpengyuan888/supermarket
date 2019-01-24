@@ -30,7 +30,7 @@ class UserTable(BaseModel):
         RegexValidator(r'1[35678]\d{9}', '请输入正确的手机号')
     ])
 
-    logo = models.ImageField(upload_to='head/%Y%m/%d', default='head/memtx.png', verbose_name='店铺LOGO')
+    head = models.ImageField(upload_to='head/%Y%m/%d', default='head/memtx.png', verbose_name='店铺LOGO')
     class Meta:
         db_table = 'userTable'
         verbose_name = '用户表'

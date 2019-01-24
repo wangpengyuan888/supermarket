@@ -9,7 +9,7 @@ from django_redis import get_redis_connection
 from db.Base_View import VerifyLoginView
 from django.views import View
 from user.forms import RegisterModelForm, LoginModelForm, AlterInfoModelForm, AlterPassWordModelForm, PassWordForm
-from user.helper import set_pwd, send_sms
+from user.helper import set_pwd, send_sms, login
 from user.models import UserTable
 
 # 登陆页面
@@ -27,10 +27,11 @@ class LoginClassView(View):
             # 如果数据合法
             user = form.cleaned_data.get('user')
             # 设置session
-            request.session['ID'] = user.pk
-            request.session['user_name'] = user.user_name
+            # request.session['ID'] = user.pk
+            # request.session['user_name'] = user.user_name
             # request.session['head'] = user.head
-            request.session.set_expiry(9999)  # 关闭浏览器就消失
+            # request.session.set_expiry(9999)  # 9999秒后就消失
+            login(request, user)
             return redirect('user:member')
         else:
             # 数据不合法 回显网页
@@ -88,6 +89,12 @@ class PersonInfoClassView(VerifyLoginView):
             # 数据合法
             # 存储数据库
             form.save()
+            user = UserTable.objects.get(pk = request.session.get('ID'))
+            if head is not None:
+                user.head = head
+            user.save()
+            login(request, user)
+
 
             return redirect('user:info')
         else:

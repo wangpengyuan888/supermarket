@@ -1,13 +1,13 @@
 from django.contrib import admin
 
 # Register your models here.
-from goods.models import GoodsSKU, Banner, Activity, GoodsCategory, Unit, GoodsSPU
+from goods.models import GoodsSKU, Banner, Activity, GoodsCategory, Unit, GoodsSPU, GoodsAlbum
 
 admin.site.register(GoodsCategory)
 admin.site.register(Unit)
 admin.site.register(GoodsSPU)
 
-
+admin.site.register(GoodsAlbum)
 admin.site.register(GoodsSKU)
 
 

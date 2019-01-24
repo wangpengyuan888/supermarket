@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'apps.orderform.apps.OrderformConfig',
     'apps.shopingcar.apps.ShopingcarConfig',
     'apps.user.apps.UserConfig',
+    'ckeditor',
+    'ckeditor_uploader',
 ]
 
 MIDDLEWARE = [
@@ -131,6 +133,9 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
 
+# 设置静态文件根目录  上线的时候使用
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
 # 将session存储到redis中
 CACHES = {
         "default": {
@@ -155,3 +160,15 @@ ACCESS_KEY_SECRET = "FzORQ587PgGBoOAdmxzCjaxQi8klUi"
 # 上传文件配置
 MEDIA_URL = "/static/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media')
+
+
+# 设置ckeditor的上传目录
+CKEDITOR_UPLOAD_PATH = "uploads/"
+
+
+# 编辑器样式配置
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+    },
+}

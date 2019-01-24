@@ -8,7 +8,7 @@
 			<div class="am-header-left am-header-nav">
 		        <a href="city.html" class="" style="color: #fff;">
 			        <img src="{% static 'images/city.png' %}" />
-			        <p style="font-size: 12px; margin-top: -35px;">南昌</p>
+			        <p style="font-size: 12px; margin-top: -35px;" id="info">南昌</p>
 			    </a>
 		   </div>
 			<h1 class="am-header-title1">
@@ -113,70 +113,7 @@
   <ul data-am-widget="gallery" class="am-gallery pro-list am-avg-sm-2 am-avg-md-2 am-avg-lg-4 am-gallery-default"  >
       <li>
         <div class="am-gallery-item">
-            <a href="{% url 'goods:detail' %}" class="">
-              <img src=" {% static 'images/test.png' %}" />
-                <h3 class="am-gallery-title">猪骨头棒新鲜生鲜肉制品猪大骨头筒骨熬汤佳品500g</h3>
-                <div class="am-gallery-desc">￥52</div>
-            </a>
-        </div>
-      </li>
-      <li>
-        <div class="am-gallery-item">
-            <a href="{% url 'goods:detail' %}" class="">
-              <img src=" {% static 'images/test1.png' %}" />
-                <h3 class="am-gallery-title">冻品批发大江鸡腿 冷鲜鸡腿放心食材1kg 冷冻食材</h3>
-                <div class="am-gallery-desc">￥39</div>
-            </a>
-        </div>
-      </li>
-        <li>
-        <div class="am-gallery-item">
-            <a href="{% url 'goods:detail' %}" class="">
-              <img src=" {% static 'images/test2.png' %}" />
-                <h3 class="am-gallery-title">法国加力果12个装 进口新鲜水果 嘎啦苹果 包邮</h3>
-                <div class="am-gallery-desc">￥45.8</div>
-            </a>
-        </div>
-      </li>
-      <li>
-        <div class="am-gallery-item">
-            <a href="{% url 'goods:detail' %}" class="">
-              <img src=" {% static 'images/test21.png' %}" />
-                <h3 class="am-gallery-title">法国加力果12个装 进口新鲜水果 嘎啦苹果 包邮</h3>
-                <div class="am-gallery-desc">￥45.8</div>
-            </a>
-        </div>
-      </li>
-       <li>
-        <div class="am-gallery-item">
-            <a href="{% url 'goods:detail' %}" class="">
-              <img src=" {% static 'images/test.png' %}" />
-                <h3 class="am-gallery-title">猪骨头棒新鲜生鲜肉制品猪大骨头筒骨熬汤佳品500g</h3>
-                <div class="am-gallery-desc">￥52</div>
-            </a>
-        </div>
-      </li>
-      <li>
-        <div class="am-gallery-item">
-            <a href="{% url 'goods:detail' %}" class="">
-              <img src=" {% static 'images/test1.png' %}" />
-                <h3 class="am-gallery-title">冻品批发大江鸡腿 冷鲜鸡腿放心食材1kg 冷冻食材</h3>
-                <div class="am-gallery-desc">￥39</div>
-            </a>
-        </div>
-      </li>
-        <li>
-        <div class="am-gallery-item">
-            <a href="{% url 'goods:detail' %}" class="">
-              <img src=" {% static 'images/test2.png' %}" />
-                <h3 class="am-gallery-title">法国加力果12个装 进口新鲜水果 嘎啦苹果 包邮</h3>
-                <div class="am-gallery-desc">￥45.8</div>
-            </a>
-        </div>
-      </li>
-      <li>
-        <div class="am-gallery-item">
-            <a href="{% url 'goods:detail' %}" class="">
+            <a href="#" class="">
               <img src=" {% static 'images/test21.png' %}" />
                 <h3 class="am-gallery-title">法国加力果12个装 进口新鲜水果 嘎啦苹果 包邮</h3>
                 <div class="am-gallery-desc">￥45.8</div>
@@ -245,7 +182,36 @@
 	})()
 </script>
  <script src="{% static 'js/amazeui.min.js' %}"></script>
+
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.12&key=003787f01293b2f07ca201503b3ff617&plugin=AMap.CitySearch"></script>
+<script type="text/javascript">
+    var map = new AMap.Map("container", {
+        resizeEnable: true,
+        center: [116.397428, 39.90923],
+        zoom: 13
+    });
+    //获取用户所在城市信息
+    function showCityInfo() {
+        //实例化城市查询类
+        var citysearch = new AMap.CitySearch();
+        //自动获取用户IP，返回当前城市
+        citysearch.getLocalCity(function(status, result) {
+            if (status === 'complete' && result.info === 'OK') {
+                if (result && result.city && result.bounds) {
+                    var cityinfo = result.city;
+                    var citybounds = result.bounds;
+                    document.getElementById('info').innerHTML =cityinfo;
+                    //地图显示当前城市
+                    map.setBounds(citybounds);
+                }
+            } else {
+                document.getElementById('info').innerHTML = result.info;
+            }
+        });
+    }
+    showCityInfo();
+</script>
 {% endblock %}
- 
+
 
  
