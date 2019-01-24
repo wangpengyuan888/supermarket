@@ -1,3 +1,4 @@
+from ckeditor_uploader.fields import RichTextUploadingField
 from django.db import models
 
 # Create your models here.
@@ -5,7 +6,7 @@ from db.base_model import BaseModel
 
 is_selling = (
     (False, '下架'),
-    (True, '下架')
+    (True, '上架')
 )
 
 # 商品分类表
@@ -24,10 +25,11 @@ class GoodsCategory(BaseModel):
 # 商品spu表
 class GoodsSPU(BaseModel):
     spu_name = models.CharField(max_length=30, verbose_name='商品spu名称')
-    content = models.TextField(verbose_name='商品详情')
+    content = RichTextUploadingField(verbose_name='商品详情')
     class Meta:
         db_table = 'GoodsSPU'
-        verbose_name = '商品sup'
+        verbose_name = '商品spu'
+        verbose_name_plural = verbose_name
 
     def __str__(self):
         return self.spu_name
