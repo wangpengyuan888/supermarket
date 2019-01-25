@@ -1,0 +1,3 @@
+# 指定搜索的字段
+{{object.good_name_sku}}
+{{object.good_spu.spu_name}}

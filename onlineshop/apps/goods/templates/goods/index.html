@@ -11,12 +11,19 @@
 			        <p style="font-size: 12px; margin-top: -35px;" id="info">南昌</p>
 			    </a>
 		   </div>
-			<h1 class="am-header-title1">
-		        <div class="search-box">
-		           <a href="village.html" class="index-search">南昌大学前湖校区∨</a>
-		         <!--  <input type="submit" value="" class="search-icon" /> -->
-		        </div>
-		    </h1>
+    <h1 class="am-header-title1">
+        <div class="search-box">
+
+            {#        <input type="text" class="cate-input" placeholder="请输入您要的搜索的产品关键词"/>#}
+            {#        <input type="button" class="cate-btn"/>#}
+            <form action="{% url 'haystack_search' %}" method="get">
+                <a href="{% url 'haystack_search' %}"> <input type="text" name="q" value="{{ query }}" class="cate-input" placeholder="请输入您要的搜索的产品关键词"/></a>
+                <input type="submit" class="cate-btn" value=""/>
+            </form>
+
+            <!--  <input type="submit" value="" class="search-icon" /> -->
+        </div>
+    </h1>
 			<div class="am-header-right am-header-nav">
 			    <a href="tidings.html" class="">
 		         <div class="messgae"><span>10</span></div>
@@ -79,7 +86,7 @@
       </li>
       <li>
         <div class="am-gallery-item">
-            <a href="{% url 'goods:category' %}" class="">
+            <a href="{% url 'goods:category' '' '' %}" class="">
               <img src="{% static 'images/icon5.png' %}" />
               <p>超市</p>
             </a>

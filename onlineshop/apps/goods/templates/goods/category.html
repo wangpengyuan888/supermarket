@@ -2,14 +2,20 @@
 {% load static %}
 {% block header_css %}
 <style>
-			.shop-list-mid .tit a{color: #909090;
-    font-size: 1.4rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    white-space: normal;
-    text-overflow: ellipsis;}
+    .shop-list-mid .tit a{color: #909090;
+        font-size: 1.4rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        white-space: normal;
+        text-overflow: ellipsis;}
+
+    .list-price {
+            background: url({% if order == 2%}{% static 'images/order-top.png' %}{% elif order == 3 %}{% static 'images/order-bot.png' %}{% else %}{% static 'images/order.png' %}{% endif %}) no-repeat right center;
+            padding-right: 20px;
+            font-style: normal;
+        }
 		</style>
 {% endblock %}
 
@@ -20,25 +26,29 @@
 					<i class="am-icon-chevron-left"></i>
 				</a>
 			</div>
-		    <div class="cate-search">
-		    	<input type="text" class="cate-input" placeholder="请输入您要的搜索的产品关键词" />
-		    	<input type="button" class="cate-btn" />
-	        </div>
+    <div class="cate-search">
+{#        <input type="text" class="cate-input" placeholder="请输入您要的搜索的产品关键词"/>#}
+{#        <input type="button" class="cate-btn"/>#}
+        <form action="{% url 'haystack_search' %}" method="get">
+            <input type="text" name="q" value="{{ query  }}" class="cate-input" placeholder="请输入您要的搜索的产品关键词"/>
+            <input type="submit" class="cate-btn" value=""/>
+        </form>
+    </div>
 	    </header>
 	    <div style="height: 49px;"></div>
 
 {% endblock %}
 {% block content %}
  <ul class="list-nav">
-	    	<li class="current"><a href="">综合</a></li>
-	    	<li><a href="">销量</a></li>
-	    	<li><a href=""><i class="list-price">价格</i></li>
-	    	<li><a href="">新品</a></li>
+	    	<li {% if order == 0 %}class="current"{% endif %}><a href="{% url 'goods:category' sort_id 0 %}">综合</a></li>
+	    	<li {% if order == 1 %}class="current"{% endif %}><a href="{% url 'goods:category' sort_id 1 %}">销量</a></li>
+	    	<li {% if order == 2 or order == 3 %}class="current"{% endif %}><a id="price" href="{% url 'goods:category' sort_id 2 %}"><i class="list-price">价格</i></a></li>
+	    	<li {% if order == 4 %}class="current"{% endif %}><a href="{% url 'goods:category' sort_id 4 %}">新品</a></li>
 	    </ul>
 	    <div class="content-list">
 	    	<div class="list-left">
                 {% for foo in sort %}
-                    <li class="current"><a href="">{{ foo.cname }}</a></li>
+                    <li {% if sort_id == foo.pk %}class="current"{% endif %}><a href="{% url 'goods:category' foo.pk ''%}">{{ foo.cname }}</a></li>
                 {% endfor %}
 
 
@@ -49,7 +59,7 @@
                         <li>
 	    		<a href="{% url 'goods:detail' datum.pk %}"><img src=" {{ MEDIA_URL }}{{ datum.logo }}" class="list-pic" /></a>
 	    		<div class="shop-list-mid" style="width: 65%;">
-                	<div class="tit"><a href="detail.html">{{ datum.good_spu.spu_name }}{{ datum.good_name_sku }}</a></div>
+                	<div class="tit"><a href="{% url 'goods:detail' datum.pk %}">{{ datum.good_spu.spu_name }}{{ datum.good_name_sku }}</a></div>
                 	<div class="am-gallery-desc">{{ datum.price }}</div>
                 	<p>销量：{{ datum.sales }}件</p>
                 </div>
@@ -62,6 +72,8 @@
                 </div>
                 <!--<a href="" class="list-cart"><img src="images/cart.png" width="30"/></a>-->
 	    	</li>
+                        {% empty %}
+                        <h5>该分类暂时没有商品</h5>
 
                     {% endfor %}
 
@@ -116,7 +128,15 @@ $(function(){
 				update_item(self.siblings('input').data('item-id'));
 			}
 		})
-	})
+	});
 
+$(function () {
+    {% if order == 2 %}
+    $('#price').attr('href', '{% url "goods:category" sort_id 3 %}');
+    {% endif %}
+    {% if order == 3 %}
+    $('#price').attr('href', '{% url "goods:category" sort_id 2 %}');
+    {% endif %}
+})
 </script>
 {% endblock %}
