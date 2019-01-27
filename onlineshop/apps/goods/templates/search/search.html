@@ -1,5 +1,6 @@
 {% extends 'comon/parent.html' %}
 {% load static %}
+{% load highlight %}
 {% block header_css %}
 <style>
     .shop-list-mid .tit a{color: #909090;
@@ -10,6 +11,10 @@
         overflow: hidden;
         white-space: normal;
         text-overflow: ellipsis;}
+     .heightline{
+            color: red;
+        }
+
 		</style>
 {% endblock %}
 
@@ -41,7 +46,15 @@
                 <a href="{% url 'goods:detail' SearchResult.object.pk %}"><img src=" {{ MEDIA_URL }}{{ SearchResult.object.logo }}"
                                                                  class="list-pic"/></a>
                 <div class="shop-list-mid" style="width: 65%;">
-                    <div class="tit"><a href="{% url 'goods:detail' SearchResult.object.pk %}">{{ SearchResult.object.good_spu.spu_name }}{{ SearchResult.object.good_name_sku }}</a>
+                    <div class="tit"><a href="{% url 'goods:detail' SearchResult.object.pk %}">
+{#                        {{ SearchResult.object.good_spu.spu_name }}#}
+{#                        {{ SearchResult.object.good_name_sku }}#}
+                        {% highlight SearchResult.object.good_spu.spu_name with query html_tag "i" css_class "heightline" %}
+                        &emsp;
+                        {% highlight SearchResult.object.good_name_sku with query html_tag "i" css_class "heightline" %}
+
+
+                    </a>
                     </div>
                     <div class="am-gallery-desc">{{ SearchResult.object.price }}</div>
                     <p>销量：{{ SearchResult.object.sales }}件</p>

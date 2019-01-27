@@ -2,12 +2,13 @@ import hashlib
 from aliyunsdkdysmsapi.request.v20170525 import SendSmsRequest
 from aliyunsdkcore.client import AcsClient
 from aliyunsdkcore.profile import region_provider
-
+from django.http import JsonResponse
 
 from django.shortcuts import redirect, render
 
 # 加密密码
 from onlineshop.settings import ACCESS_KEY_ID, ACCESS_KEY_SECRET
+from shopingcar.helper import json_msg
 
 
 def set_pwd(pwd):
@@ -21,7 +22,14 @@ def set_pwd(pwd):
 def check_login(func):
     def verify_login(request, *args, **kwargs):
         if request.session.get('ID') is None:
-            return redirect('user:login')
+            # 将上一次请求的地址存入session
+            referer = request.META.get('HTTP_REFERER', None)
+            if referer:
+                request.session['referer'] = referer
+            if request.is_ajax():
+                return JsonResponse(json_msg(1, '账号为未登陆'))
+            else:
+                return redirect('user:login')
         else:
             return func(request, *args, **kwargs)
     return verify_login

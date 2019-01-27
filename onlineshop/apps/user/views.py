@@ -32,7 +32,12 @@ class LoginClassView(View):
             # request.session['head'] = user.head
             # request.session.set_expiry(9999)  # 9999秒后就消失
             login(request, user)
-            return redirect('user:member')
+            referer = request.session.get('referer')
+            if referer:
+                del request.session['referer']
+                return redirect(referer)
+            else:
+                return redirect('user:member')
         else:
             # 数据不合法 回显网页
             context ={

@@ -66,7 +66,7 @@
                 <div class="list-cart">
                 <div class="d-stock ">
 		                <a class="decrease">-</a>
-		                <input id="num" readonly="" class="text_box" name="" type="text" value="0">
+		                <input sku_id="{{ datum.pk }}" id="num" readonly="" class="text_box" name="" type="text" value="0">
 		                <a class="increase">+</a>
                 </div>
                 </div>
@@ -88,7 +88,7 @@
 	    <!--底部-->
  <div style="height: 55px;"></div>
  <div class="fix-bot">
-	   	  <div class="fix-bot-cart"><i>8</i></div>
+	   	  <div class="fix-bot-cart"><i id="cart_count">{{ cart_count }}</i></div>
 	   	  <a href="tureorder.html" class="list-js">去结算</a>
 	   	  <a href="tureorder.html" class="list-jsk">一键快购</a>
 	   	  <!--<div class="js-text">
@@ -107,29 +107,85 @@ $(function(){
 		$('.increase').click(function(){
 			var self = $(this);
 			var current_num = parseInt(self.siblings('input').val());
-			current_num += 1;
-			if(current_num > 0){
-				self.siblings(".decrease").fadeIn();
-				self.siblings(".text_box").fadeIn();
-			}
-			self.siblings('input').val(current_num);
-			update_item(self.siblings('input').data('item-id'));
-		})
+			//准备数据
+            var sku_id = self.siblings('input').attr('sku_id');
+            var data = {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'good_count': 1,
+                'sku_id': sku_id
+            };
+			//完成ajax请求
+            $.ajax({
+               type: 'post',
+               url: '{% url "shopingcar:addcar" %}',
+               data: data,
+               dataType: 'json',
+                success: function (data) {
+                    if (data.code == 0) {
+                        current_num += 1;
+                        if (current_num > 0) {
+                            self.siblings(".decrease").fadeIn();
+                            self.siblings(".text_box").fadeIn();
+                        }
+                        self.siblings('input').val(current_num);
+                        //修改总数量
+                        $('#cart_count').text(data.data);
+                    }else if(data.code == 1){
+                        if(confirm("没有登陆，是否立即登陆")){
+                            location.href = "{% url 'user:login' %}";
+                        }
+
+                    }else {
+                        alert(data.errmsg)
+                    }
+                }
+
+            });
+
+
+		});
 		$('.decrease').click(function(){
 			var self = $(this);
 			var current_num = parseInt(self.siblings('input').val());
-			if(current_num > 0){
-				current_num -= 1;
-                if(current_num < 1){
-	                self.fadeOut();
-					self.siblings(".text_box").fadeOut();
+			var sku_id = self.siblings('input').attr('sku_id');
+            var data = {
+                'csrfmiddlewaretoken': '{{ csrf_token }}',
+                'good_count': 1,
+                'sku_id': sku_id
+            };
+			//完成ajax请求
+            $.ajax({
+               type: 'post',
+               url: '{% url "shopingcar:reducecar" %}',
+               data: data,
+               dataType: 'json',
+                success: function (data) {
+                    if (data.code == 0) {
+                        if (current_num > 0) {
+                            current_num -= 1;
+                            if (current_num < 1) {
+                                self.fadeOut();
+                                self.siblings(".text_box").fadeOut();
+                            }
+                            self.siblings('input').val(current_num);
+                        }
+                        //修改总数量
+                        $('#cart_count').text(data.data);
+                    }else if(data.code == 1){
+                        if(confirm("没有登陆，是否立即登陆")){
+                            location.href = "{% url 'user:login' %}";
+                        }
+
+                    }else {
+                        alert(data.errmsg)
+                    }
                 }
-				self.siblings('input').val(current_num);
-				update_item(self.siblings('input').data('item-id'));
-			}
+
+            });
 		})
 	});
 
+{#销量的升降排序#}
 $(function () {
     {% if order == 2 %}
     $('#price').attr('href', '{% url "goods:category" sort_id 3 %}');
@@ -138,5 +194,6 @@ $(function () {
     $('#price').attr('href', '{% url "goods:category" sort_id 2 %}');
     {% endif %}
 })
+
 </script>
 {% endblock %}
