@@ -2,13 +2,14 @@ from django.shortcuts import render
 from django.views import View
 
 
-from goods.models import GoodsSPU, GoodsSKU, GoodsCategory
+from goods.models import GoodsSPU, GoodsSKU, GoodsCategory, Banner
 from shopingcar.helper import get_cart_count
 
 # 主页面
 class MainClassView(View):
     def get(self, request):
-        return render(request, 'goods/index.html')
+        data = Banner.objects.all()
+        return render(request, 'goods/index.html', {'data':data})
 
     def post(self, request):
         pass
@@ -65,6 +66,7 @@ class CategoryClassView(View):
         data = data.order_by(order_rule[order])
         # 获取当前用户 购物车中的总数量
         cart_count = get_cart_count(request)
+
 
         context = {
             'data': data,

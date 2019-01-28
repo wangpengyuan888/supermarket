@@ -36,8 +36,12 @@
 <!--图片轮换-->
 <div class="am-slider am-slider-default" data-am-flexslider id="demo-slider-0">
   <ul class="am-slides">
-    <li><img src="{% static 'images/banner.png' %}" /></li>
-    <li><img src="{% static 'images/banner.png'%}" /></li>
+      {% for picture in data %}
+       <li><img src="{{ MEDIA_URL }}{{ picture.img_url }}" /></li>
+      {% endfor %}
+
+
+{#    <li><img src="{% static 'images/banner.png'%}" /></li>#}
   </ul>
 </div>
 <!--导航-->
@@ -157,7 +161,7 @@
             </a>
           </li>
           <li>
-            <a href="shopcart.html" class="">
+            <a href="{% url 'shopingcar:cart' %}" class="">
                 <span class="am-icon-shopping-cart"></span>
                 <span class="am-navbar-label">购物车</span>
             </a>

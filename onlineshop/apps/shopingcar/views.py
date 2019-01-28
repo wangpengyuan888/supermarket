@@ -89,9 +89,9 @@ class ReduceCarClassView(VerifyLoginView):
             good_sku = GoodsSKU.objects.get(pk=sku_id)
         except GoodsSKU.DoesNotExist:
             return JsonResponse(json_msg(3, '商品不存在'))
-        # 判断库存
-        if good_sku.stock < good_count:
-            return JsonResponse(json_msg(4, '库存不足'))
+        # # 判断库存
+        # if good_sku.stock < good_count:
+        #     return JsonResponse(json_msg(4, '库存不足'))
 
         # 操作数据库
         # 创建链接
@@ -107,16 +107,46 @@ class ReduceCarClassView(VerifyLoginView):
             old_count = int(old_count)
         if old_count+good_count > good_sku.stock:
             return JsonResponse(json_msg(3, '库存不足'))
+        # 如果数量为1，提示不能在减少了
+        good_num = r.hget(cart_key, sku_id)
+        if int(good_num) <= 1:
+            return JsonResponse(json_msg(5, '客官，数量不能在少了'))
         # 将商品添加到购物车
         r.hincrby(cart_key, sku_id, -good_count)
         # 获取购物车中的总数量
         cart_count = get_cart_count(request)
-        return JsonResponse(json_msg(0, '添加购物车成功', data=cart_count))
+        return JsonResponse(json_msg(0, '减少商品成功', data=cart_count))
 
 
 # 购物车页面
 class CartClassView(VerifyLoginView):
     def get(self, request):
-        return render(request, 'shopingcar/shopcart.html')
+        # 获取用户id
+        user_id = request.session.get('ID')
+        # 连接redis数据库
+        r = get_redis_connection()
+        user_shop_car = r.hgetall(f"cart_{user_id}")
+        # good_num = []
+        good_sku = []
+        user_shop_car = set(user_shop_car.items())
+        user_shop_car = list(user_shop_car)
+        # 查询出redis中有的商品的sku信息
+        for k, v in user_shop_car:
+            k = int(k)
+            v = int(v)
+            good = GoodsSKU.objects.get(pk=k)
+            good_sku.append((good, v))
+
+        context = {
+            "good_sku": good_sku
+        }
+        # goods_info = {}
+        # for index, i in user_shop_car:
+        #     i = int(i)
+        #     if index%2 == 0:
+        #         goods_info[i] = user_shop_car[index+1]
+        # print(goods_info)
+
+        return render(request, 'shopingcar/shopcart.html', context=context)
     def post(self, request):
         pass
