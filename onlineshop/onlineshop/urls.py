@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from apps.goods import views as good_views
 
 
 urlpatterns = [
@@ -28,4 +29,5 @@ urlpatterns = [
     url(r'^orderform/', include('apps.orderform.urls', namespace='orderform')),
     url(r'^shopingcar/', include('apps.shopingcar.urls', namespace='shopingcar')),
     url(r'^user/', include('apps.user.urls', namespace='user')),
+    url(r'^$', good_views.MainClassView.as_view())
 ]

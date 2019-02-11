@@ -125,17 +125,18 @@ class CartClassView(VerifyLoginView):
         user_id = request.session.get('ID')
         # 连接redis数据库
         r = get_redis_connection()
+        # 获取购物车中的商品信息
         user_shop_car = r.hgetall(f"cart_{user_id}")
-        # good_num = []
         good_sku = []
-        user_shop_car = set(user_shop_car.items())
-        user_shop_car = list(user_shop_car)
         # 查询出redis中有的商品的sku信息
-        for k, v in user_shop_car:
+        for k, v in user_shop_car.items():
             k = int(k)
             v = int(v)
-            good = GoodsSKU.objects.get(pk=k)
-            good_sku.append((good, v))
+            try:
+                good = GoodsSKU.objects.get(pk=k, is_delete=False, is_selling=True)
+                good_sku.append((good, v))
+            except GoodsSKU.DoesNotExist:
+                continue
 
         context = {
             "good_sku": good_sku

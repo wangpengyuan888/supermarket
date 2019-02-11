@@ -1,43 +1,165 @@
 {% extends 'comon/parent.html' %}
 {% load static %}
+{% block header_css %}
+    <style>
+        ._citys {
+            width: 100%;
+            height: 100%;
+            display: inline-block;
+            position: relative;
+            background-color: #fff;
+        }
+
+        ._citys span {
+            color: #56b4f8;
+            height: 15px;
+            width: 15px;
+            line-height: 15px;
+            text-align: center;
+            border-radius: 3px;
+            position: absolute;
+            right: 1em;
+            top: 10px;
+            border: 1px solid #56b4f8;
+            cursor: pointer;
+        }
+
+        ._citys0 {
+            width: 100%;
+            height: 34px;
+            display: inline-block;
+            border-bottom: 2px solid #56b4f8;
+            padding: 0;
+            margin: 0;
+        }
+
+        ._citys0 li {
+            float: left;
+            height: 34px;
+            line-height: 34px;
+            overflow: hidden;
+            font-size: 15px;
+            color: #888;
+            width: 80px;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .citySel {
+            background-color: #56b4f8;
+            color: #fff !important;
+        }
+
+        ._citys1 {
+            width: 100%;
+            height: 80%;
+            display: inline-block;
+            padding: 10px 0;
+            overflow: auto;
+        }
+
+        ._citys1 a {
+            height: 35px;
+            display: block;
+            color: #666;
+            padding-left: 6px;
+            margin-top: 3px;
+            line-height: 35px;
+            cursor: pointer;
+            font-size: 13px;
+            overflow: hidden;
+        }
+
+        ._citys1 a:hover {
+            color: #fff;
+            background-color: #56b4f8;
+        }
+
+        .ui-content {
+            border: 1px solid #EDEDED;
+        }
+
+        li {
+            list-style-type: none;
+        }
+    </style>
+{% endblock %}
 {% block header_js %}
-<script src="{% static 'js/area.js' %}"></script>
+    <script src="{% static 'js/area.js' %}"></script>
+    <script src="{% static 'js/common.js' %}"></script>
+    <script src="{% static 'js/Popt.js' %}"></script>
+    <script src="{% static 'js/cityJson.js' %}"></script>
+    <script src="{% static 'js/citySet.js' %}"></script>
 {% endblock %}
 {% block header %}
-<header data-am-widget="header" class="am-header am-header-default sq-head ">
-			<div class="am-header-left am-header-nav">
-				<a href="javascript:history.back()" class="">
-					<i class="am-icon-chevron-left"></i>
-				</a>
-			</div>
-			<h1 class="am-header-title">
-  	            <a href="" class="">新增收货地址</a>
-            </h1>
-	    </header>
-	    <div style="height: 60px;"></div>
+    <header data-am-widget="header" class="am-header am-header-default sq-head ">
+        <div class="am-header-left am-header-nav">
+            <a href="javascript:history.back()" class="">
+                <i class="am-icon-chevron-left"></i>
+            </a>
+        </div>
+        <h1 class="am-header-title">
+            <a href="" class="">新增收货地址</a>
+        </h1>
+    </header>
+    <div style="height: 60px;"></div>
 {% endblock %}
 {% block content %}
-<ul class="address">
-	    	<li>
-	    		<a href="village.html"><input type="text" class="add-input"  disabled="disabled" placeholder="宿舍区" />
-	    		<i class="am-icon-angle-right" style="float: right; margin-top: 5px;"></i></a>
-	    	</li>
-	    	<li>
-	    		<a href="village.html"><input type="text" class="add-input"  disabled="disabled" placeholder="哪栋楼" />
-	    		<i class="am-icon-angle-right" style="float: right; margin-top: 5px;"></i></a>
-	    	</li>
-	    	<li><input type="text" class="add-input" placeholder="你在哪" /></li>
-	    	<li><input type="text" class="add-input" placeholder="收货人" /></li>
-	    	<li><input type="text" class="add-input" placeholder="13000000000" /></li>
-	    </ul>
-	    <div class="moren">
-	    	<label class="am-checkbox am-warning">
-                 <input type="checkbox" checked="checked" value="" data-am-ucheck checked>设为默认
-            </label>
+    <form action="" method="post" id="addForm">
+    {% csrf_token %}
+    <div>
+        <ul class="address">
+            <li><span id="city" style="color:#d7d7d7;padding-left:5px; width: 100%">请选择地址</span></li>
+            <p class="am-text-danger hcity hproper harea ">{{ errors.hcity.0 }}{{ errors.hproper.0 }}{{ errors.harea.0 }}</p>
+            <li>
+                <input type="text" name="detail_address" class="add-input" value="{{ data.detail_address }}" placeholder="详细地址"/>
+            </li>
+            <p class="am-text-danger detail_address">{{ errors.detail_address.0 }}</p>
+            <li><input type="text" name="user_name" class="add-input" value="{{ data.user_name }}" placeholder="收货人"/></li>
+            <p class="am-text-danger user_name">{{ errors.user_name.0 }}</p>
+            <li><input type="text"  class="phone" name="phone" value="{{ data.phone }}" placeholder="联系电话"/></li>
+            <p class="am-text-danger phone">{{ errors.phone.0 }}</p>
 
-	    </div>
-	    <input type="button" class="login-btn" value="确认提交">
+        </ul>
+    </div>
+
+    <div class="moren">
+        <label class="am-checkbox am-warning">
+            <input type="checkbox" name="is_default" checked="checked" value="1" data-am-ucheck >设为默认
+        </label>
+
+    </div>
+    <input type="button" id="submit_btn" class="login-btn" value="确认提交">
+    </form>
 {% endblock %}
 {% block footer_js %}
-<script src="{% static 'js/amazeui.min.js' %}"></script>
+     <script type="text/javascript">
+            $("#city").click(function (e) {
+                SelCity(this, e);
+                console.log(this);
+            });
+            $(function () {
+                $('#submit_btn').on('click', function () {
+                    var data = $("#addForm").serialize();
+                    $.ajax({
+                        type: 'post',
+                        url: '{% url "orderform:addaddress" %}',
+                        data: data,
+                        datatype: 'json',
+                        success: function (data) {
+                            if(data.code==0){
+                                location.href = data.data
+                            }else{
+                                $('.am-text-danger').text('');
+                                var errors = data.data;
+                                for (var key in errors){
+                                    $('.'+key).text(errors[key][0]);
+                                }
+                            }
+                        }
+                    })
+                })
+            })
+        </script>
+    <script src="{% static 'js/amazeui.min.js' %}"></script>
 {% endblock %}

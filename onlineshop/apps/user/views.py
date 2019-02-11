@@ -197,7 +197,7 @@ class SendMsg(View):
 
         # >>>3. 接入运营商
         __business_id = uuid.uuid1()
-        params = "{\"code\":\"%s\",\"product\":\"测试测试\"}" % random_code
+        params = "{\"code\":\"%s\",\"product\":\"你好---阿斌\"}" % random_code
         # print(params)
         rs = send_sms(__business_id, user_name, "注册验证", "SMS_2245271", params)
         print(rs.decode('utf-8'))

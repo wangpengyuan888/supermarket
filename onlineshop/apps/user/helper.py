@@ -31,6 +31,7 @@ def check_login(func):
             else:
                 return redirect('user:login')
         else:
+            print(func)
             return func(request, *args, **kwargs)
     return verify_login
 

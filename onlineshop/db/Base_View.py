@@ -9,4 +9,4 @@ class VerifyLoginView(View):
 
     @method_decorator(check_login)
     def dispatch(self, request, *args, **kwargs):
-        return super().dispatch(request, *args, **kwargs)
+        return super(VerifyLoginView, self).dispatch(request, *args, **kwargs)
