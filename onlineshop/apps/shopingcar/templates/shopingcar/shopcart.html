@@ -19,11 +19,13 @@
 		{% endblock %}
 {% block content %}
 <!--购物车空的状态-->
+    <form action="{% url 'orderform:sureorder' %}" method="post" id="cart">
+        {% csrf_token %}
 	    <ul class="shopcart-list">
             {% for good in good_sku %}
             <li>
 	    		<label class="am-checkbox am-warning">
-                 <input type="checkbox" checked="checked" value="" data-am-ucheck checked>
+                 <input type="checkbox" checked="checked" name="sku_ids" value="{{ good.0.pk }}" data-am-ucheck checked>
                 </label>
                 <a href="{% url 'goods:detail' good.0.pk %}"><img src="{{ MEDIA_URL }}{{ good.0.logo }}" class="shop-pic" /></a>
                 <div class="shop-list-mid">
@@ -33,7 +35,7 @@
                 <div class="list-cart1">
 	                <div class="d-stock">
 			                <a class="decrease">-</a>
-			                <input id="num" sku_id="{{ good.0.pk }}" readonly="" class="text_box" name="" type="text" value="{{ good.1 }}">
+			                <input id="num" sku_id="{{ good.0.pk }}" readonly="" class="text_box"  type="text" value="{{ good.1 }}">
 			                <a class="increase">+</a>
 	                </div>
                 </div>
@@ -57,12 +59,13 @@
                <input type="checkbox" id="check_all" checked="checked" value="" data-am-ucheck checked>
             </label>
             <a class="del">全选</a>
-            <a href="{% url 'orderform:sureorder' %}" class="js-btn">去结算</a>
+            <input type="button" class="js-btn" value="去结算">
             <div class="js-text">
             	<P>合计：<b id="total_price">￥217.80</b></P>
             	<p class="js-car">免费配送</p>
             </div>
 	    </div>
+    </form>
 {% endblock %}
 	    
 {% block footer %}

@@ -136,6 +136,7 @@ class CartClassView(VerifyLoginView):
                 good = GoodsSKU.objects.get(pk=k, is_delete=False, is_selling=True)
                 good_sku.append((good, v))
             except GoodsSKU.DoesNotExist:
+                r.hdel(user_shop_car,k)
                 continue
 
         context = {

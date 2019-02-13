@@ -8,4 +8,6 @@ urlpatterns = [
     url(r'^allorder/$', views.AllOrderClassView.as_view(), name='allorder'),
     url(r'^adminaddress/$', views.AdminAddressClassView.as_view(), name='adminaddress'),
     url(r'^alterisdefault/$', views.AlterIsDefaultClassView.as_view(), name='alterisdefault'),
+    url(r'^ordersave/$', views.OrderSave.as_view(), name='Ordersave'),
+    url(r'^surepay/$', views.SurePay.as_view(), name='surepay'),
 ]

@@ -15,32 +15,49 @@
 {% endblock %}
 
 {% block content %}
+    <form action="{% url 'orderform:Ordersave' %}" method="post">
+    {% csrf_token %}
     {% if data %}
-        <a href="{% url 'orderform:adminaddress' %}">
-        <ul class="address-list" style="padding-bottom: 0px">
+        {% comment %}<ul class="address-list" style="padding-bottom: 0px">
             <li class="curr">
-                <p>收货人：{{ data.0.user_name }}&nbsp;&nbsp;{{ data.0.phone }}</p>
+                <p>收货人：{{ data.user_name }}&nbsp;&nbsp;{{ data.phone }}</p>
                 <p class="order-add1">
-                    收货地址：{{ data.0.hcity }}{{ data.0.hproper }} {{ data.0.harea }} {{ data.0.detail_address }}</p>
+                    收货地址：{{ data.hcity }}{{ data.hproper }} {{ data.harea }} {{ data.detail_address }}</p>
             </li>
-        </ul>
-        </a>
-        <hr>
+        </ul>{% endcomment %}
+        <h5 class="order-tit">收货人信息</h5>
+	    <div class="order-name">
+	    	<a href="{% url 'orderform:adminaddress' %}">
+	    		<p class="order-tele">{{ data.user_name }}&nbsp;&nbsp;&nbsp;{{ data.phone }}</p>
+	    		<p class="order-add">{{ data.hcity }}{{ data.hproper }} {{ data.harea }} {{ data.detail_address }}</p>
+                <i class="am-icon-angle-right"></i>
+	    	</a>
+            <input type="hidden" name="address_id" value="{{ data.pk }}">
+	    </div>
+        <div style="background: #eee; height: 10px;"></div>
     {% else %}
         <div class="add-address">
             <a href="{% url 'orderform:addaddress' %}">+新建收货地址</a>
             <i class="am-icon-angle-right"></i>
         </div>
+        <div style="height: 49px;"></div>
+        <hr>
     {% endif %}
-
+<h5 class="order-tit">确认订单信息</h5>
+        <hr>
     <ul class="shopcart-list" style="padding-bottom: 0;">
-        <li>
-            <img src="{% static 'images/test3.png' %}" class="shop-pic"/>
+        {% for good in goods %}
+            <li>
+            <img src="{{ MEDIA_URL }}{{ good.logo }}" class="shop-pic"/>
             <div class="order-mid">
-                <div class="tit">法国加力果12个装 进口新鲜水果 嘎啦苹果 包邮</div>
-                <div class="order-price">￥169 <i>X2</i></div>
+                <div class="tit">{{ good.good_name_sku }}</div>
+                <div class="order-price">￥{{ good.price }} <i>X{{ good.total }}</i></div>
             </div>
         </li>
+            <input type="hidden" name="sku_ids" value="{{ good.pk }}">
+        {% endfor %}
+
+
         {% comment %}<li>
                 <img src="images/test3.png" class="shop-pic" />
                 <div class="order-mid">
@@ -52,11 +69,17 @@
     <ul class="order-infor">
         <li class="order-infor-first">
             <span>商品总计：</span>
-            <i>￥88.00</i>
+            <i>￥<span id="total_price">{{ goods_total_price }}</span></i>
         </li>
         <li class="order-infor-first">
-            <span>运费：</span>
-            <i>包邮</i>
+            <span>运输方式：</span>
+            <i>
+                <select name="expressage" id="expressage">
+                    {% for foo in expressage %}
+                    <option value='{{ foo.pk }}' price='{{ foo.price }}'>{{ foo.name }}--￥{{ foo.price }}</option>
+                    {% endfor %}
+                </select>
+            </i>
         </li>
         <li class="order-infor-first">
             <a href="">积分抵费></a>
@@ -71,10 +94,11 @@
     <div style="height: 55px;"></div>
     <div class="shop-fix">
         <div class="order-text">
-            应付总额：<span>￥188</span>
+            应付总额：￥<span id="fin_price">0.00</span>
         </div>
-        <a href="order.html" class="js-btn">提交订单</a>
+        <input type="button" class="js-btn" value="提交订单">
     </div>
+    </form>
     <!--底部-->
     <div style="height: 55px;"></div>
     <div data-am-widget="navbar" class="am-navbar am-cf am-navbar-default sq-foot am-no-layout" id="">
@@ -119,4 +143,39 @@
 
 {% block footer_js %}
     <script src="{% static 'js/amazeui.min.js' %}"></script>
+    <script>
+    $(function () {
+        function totalprice(){
+            {#获取商品总计价钱#}
+            var goods_price = $('#total_price').text();
+            {#获取运费价钱#}
+            var expressage_price = $('#expressage').find(':selected').attr('price');
+            {#重新计算总金额#}
+            var total_price = Number(goods_price)+Number(expressage_price);
+            {#将价格放在对应位置#}
+            $('#fin_price').text(total_price.toFixed(2))
+        }
+        totalprice();
+        {#当快递方式修改时重新计算价格#}
+        $('#expressage').change(function () {
+            totalprice();
+        });
+        $('.js-btn').on('click', function () {
+            var data = $('form').serialize();
+            $.ajax({
+                type: 'post',
+                url: '{% url "orderform:Ordersave" %}',
+                data: data,
+                datatype: 'json',
+                success: function (data) {
+                    if(data.code==0){
+                        location.href = "{% url 'orderform:surepay' %}?order_sn="+data.data;
+                    }else {
+                        alert(data.errmsg)
+                    }
+                }
+            })
+        })
+    })
+    </script>
 {% endblock %}
