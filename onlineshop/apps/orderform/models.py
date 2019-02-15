@@ -148,6 +148,7 @@ class OrderGoods(BaseModel):
 class Payment(BaseModel):
     name = models.CharField(max_length=50, verbose_name='支付方式')
     brief = models.CharField(max_length=200, verbose_name='说明')
+    is_recommend = models.BooleanField(default=False, verbose_name='是否是推荐方式')
     logo = models.ImageField(upload_to='payment/%Y', verbose_name='支付logo')
 
     def __str__(self):

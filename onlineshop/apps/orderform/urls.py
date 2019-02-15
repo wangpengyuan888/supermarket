@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^alterisdefault/$', views.AlterIsDefaultClassView.as_view(), name='alterisdefault'),
     url(r'^ordersave/$', views.OrderSave.as_view(), name='Ordersave'),
     url(r'^surepay/$', views.SurePay.as_view(), name='surepay'),
+    url(r'^completionfpayment/$', views.AlterOrderStatus.as_view(), name='completionfpayment'),
 ]

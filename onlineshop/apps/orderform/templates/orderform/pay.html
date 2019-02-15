@@ -1,41 +1,68 @@
 {% extends 'comon/parent.html' %}
 {% load static %}
 {% block header %}
-<header data-am-widget="header" class="am-header am-header-default sq-head ">
-			<div class="am-header-left am-header-nav">
-				<a href="javascript:history.back()" class="">
-					<i class="am-icon-chevron-left"></i>
-				</a>
-			</div>
-			<h1 class="am-header-title">
-  	            <a href="" class="">完成支付</a>
-            </h1>
-	    </header>
-	    <div style="height: 49px;"></div>
+    <header data-am-widget="header" class="am-header am-header-default sq-head ">
+        <div class="am-header-left am-header-nav">
+            <a href="javascript:history.back()" class="">
+                <i class="am-icon-chevron-left"></i>
+            </a>
+        </div>
+        <h1 class="am-header-title">
+            <a href="" class="">订单支付</a>
+        </h1>
+    </header>
+    <div style="height: 49px;"></div>
 {% endblock %}
 {% block content %}
-<ul class="order-detail">
-	       <li><span>订单编号：</span>{{ data.order_sn }}</li>
-	       <li><span>订单总价：</span>￥{{ data.order_price }}</li>
-	    </ul>
-	    <ul class="pay-style">
+    <form action="" method="post">
+    {% csrf_token %}
+        <ul class="order-detail">
+            <li><span>订单编号：</span>{{ data.order_sn }}</li>
+            <li><span>订单总价：</span>￥{{ data.order_price }}</li>
+            <input type="hidden" name="order_sn" value="{{ data.order_sn }}">
+        </ul>
+        <ul class="pay-style">
             {% for payment in payments %}
-            <li>
-		   	 	<img src="{{ MEDIA_URL }}{{ payment.logo }}" width="50" />
-		   	 	<span>
+                <li>
+                    <img src="{{ MEDIA_URL }}{{ payment.logo }}" width="50"/>
+                    <span>
 		   	 		<p>{{ payment.name }}</p>
 		   	 		<p class="descript">{{ payment.brief }}</p>
 		   	 	</span>
-		   	 	<label class="am-radio-inline">
-				    <input type="radio" checked="checked" name="radio10" value="1" data-am-ucheck>
-				</label>
-	   	    </li>
+                    <label class="am-radio-inline">
+                        <input type="radio" {% if payment.is_recommend %}
+                               checked="checked"
+                        {% endif %} name="payment" value="{{ payment.pk }}" data-am-ucheck>
+                    </label>
+                </li>
             {% endfor %}
-	    </ul>
-	    <input type="button" class="login-btn" value="确认支付">
+        </ul>
+        <input type="button" class="login-btn" value="确认支付">
+    </form>
 {% endblock %}
 
-	   {% block footer_js %}
-	    <script src="{% static 'js/amazeui.min.js' %}"></script>
-	   {% endblock %}
+{% block footer_js %}
+    <script src="{% static 'js/amazeui.min.js' %}"></script>
+    <script type="application/javascript">
+    $(function () {
+        var data = $('form').serialize();
+        $('.login-btn').on('click', function () {
+            $.ajax({
+                type: 'post',
+                url: '{% url "orderform:surepay" %}',
+                data: data,
+                datatype: 'json',
+                success: function (data) {
+                    if (data.code==0){
+                        location.href = data.data
+                    }else {
+                        alert(data.errormsg)
+                    }
+                }
+            })
+
+        })
+    })
+    </script>
+{% endblock %}
 
